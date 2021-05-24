@@ -11,7 +11,7 @@ urlpatterns=[
 
     path("lots/", LotList.as_view()),
     path("add_lot/", CteateNewLot.as_view()),
-    path("close_lot/<int:pk>", CloseLot.as_view()),
+    path("close_lot/", CloseLot.as_view()),
 
     path("bids/", BidsList.as_view()),
     path("make_bids/", MakeBid.as_view()),

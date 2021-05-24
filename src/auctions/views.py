@@ -1,5 +1,6 @@
 from .models import User, Pet, Lot, Bid
-from .serializer import UserSerializer, PetsSerializer, LotSerializer, RateSerializer
+from .serializer import UserSerializer, PetsSerializer, LotSerializer, BidSerializer, LotCloseSerializer
+from .services import close_lot
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -40,16 +41,13 @@ class BidsList(APIView):
     """ получение списка ставок """
     def get(self, request):
         rates = Bid.objects.all()
-        rates_serialize = RateSerializer(rates, many=True)
+        rates_serialize = BidSerializer(rates, many=True)
         return Response(rates_serialize.data)
 
 
 class CteateNewLot(APIView):
     """ добавление нового лота """
     def post(self, request):
-        # проверки --------------------------------------
-        # проверим наличие животины в выставленных лотах;
-        # пользователь може выставить толко его животин;
         #ToDo: add validation
         new_lot = LotSerializer(data=request.data)
         if new_lot.is_valid():
@@ -62,7 +60,7 @@ class CteateNewLot(APIView):
 class MakeBid(APIView):
     """ сдать ставку """
     def post(self, request):
-        new_bid = RateSerializer(data=request.data)
+        new_bid = BidSerializer(data=request.data)
         #ToDo: add validation
         if new_bid.is_valid():
             return Response(status=201)
@@ -71,8 +69,14 @@ class MakeBid(APIView):
 
 
 class CloseLot(APIView):
-    """ закрыть ставку и удалить лот"""
-    def post(self, request, pk):
-        lot = Lot.objects.get(id=pk)
-        lot.delete()
-        return Response(status=204)
+    """ закрыть и удалить лот, удалить связанные ставки, повысить баланс владельца, сменить владельца питомца"""
+    def post(self, request):
+        lot = LotCloseSerializer(data=request.data)
+        if lot.is_valid():
+            close_lot(
+                lot_id=request.data['id'],
+                bid_id=request.data['bid_id'],
+            )
+            return Response(status=204)
+        else:
+            return Response(status=400)

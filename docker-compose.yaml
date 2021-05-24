@@ -7,9 +7,9 @@ services:
     image: postgres
     restart: always
     environment:
-      POSTGRES_USER: nr
-      POSTGRES_PASSWORD: 123
-      POSTGRES_DB: db1
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_DB: ${DB_NAME}
       PGDATA: /data/postgres
       TZ: Europe/Minsk
     volumes:
@@ -40,6 +40,11 @@ services:
   app:
     container_name: app_server
     build: src
+    environment:
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+      DB_NAME: ${DB_NAME}
+      SECRET_KEY: ${SECREATE_KEY}
     restart: always
     command:
       bash -c

@@ -58,7 +58,6 @@ class Lot(models.Model):
     start_price = models.IntegerField(default=0)
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     lot = models.ForeignKey(Pet, on_delete=models.CASCADE)
-    # ToDo: продумать выборку только нужных лотов в зависимости от выбранног владельца
 
     def __str__(self):
         return 'User: %s, lot: %s' % (self.owner, self.lot)
