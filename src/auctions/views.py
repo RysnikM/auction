@@ -62,8 +62,11 @@ class MakeBid(APIView):
     """ сдать ставку """
     def post(self, request):
         new_bid = BidSerializer(data=request.data)
-        #ToDo: add validation
-        if new_bid.is_valid():
+        if new_bid.is_valid() and make_bid(
+            id_owner=new_bid.data['owner'],
+            rate=new_bid.data['rate'],
+            id_lot=new_bid.data['lot'],
+        ):
             return Response(status=201)
         else:
             return Response(status=400)
@@ -73,11 +76,9 @@ class CloseLot(APIView):
     """ закрыть и удалить лот, удалить связанные ставки, повысить баланс владельца, сменить владельца питомца"""
     def post(self, request):
         lot = LotCloseSerializer(data=request.data)
-        if lot.is_valid():
-            close_lot(
+        if lot.is_valid() and close_lot(
                 lot_id=request.data['id'],
-                bid_id=request.data['bid_id'],
-            )
+                bid_id=request.data['bid_id']):
             return Response(status=204)
         else:
             return Response(status=400)

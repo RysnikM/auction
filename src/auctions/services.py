@@ -14,9 +14,18 @@ def add_lot(owner_id: int, pet_id: int, start_price: int):
     else:
         return False
 
-def make_bid(id_lot: int, rate: int):
+def make_bid(id_owner: int, id_lot: int, rate: int):
     """ делает ставку на лот """
-    pass
+    if not check_owner_of_pet(id_pet=Lot.objects.get(id=id_lot).lot.id, id_user=id_owner):
+        Bid(
+            owner=User.objects.get(id=id_owner),
+            lot=Lot.objects.get(id=id_lot),
+            rate=rate
+        ).save()
+        return True
+    else:
+        return False
+
 
 def close_lot(lot_id: int, bid_id: int):
     """ закрывает лот
@@ -24,23 +33,28 @@ def close_lot(lot_id: int, bid_id: int):
     bid_id - id выигровшей ставки,
     """
 
-    update_user_balance(
-        Lot.objects.get(id=lot_id).owner.id,
-        Bid.objects.get(id=bid_id).rate
-    )
-    update_user_balance(
-        Bid.objects.get(id=bid_id).owner.id,
-        -Bid.objects.get(id=bid_id).rate
-    )
-    change_pet_owner(
-        Lot.objects.get(id=lot_id).lot.id,
-        Bid.objects.get(id=bid_id).owner.id,
-    )
+    if check_owner_of_pet(id_pet=Lot.objects.get(id=lot_id).lot.id, id_user=Lot.objects.get(id=lot_id).owner.id):
+        update_user_balance(
+            Lot.objects.get(id=lot_id).owner.id,
+            Bid.objects.get(id=bid_id).rate
+        )
+        update_user_balance(
+            Bid.objects.get(id=bid_id).owner.id,
+            -Bid.objects.get(id=bid_id).rate
+        )
+        change_pet_owner(
+            Lot.objects.get(id=lot_id).lot.id,
+            Bid.objects.get(id=bid_id).owner.id,
+        )
 
-    delete_lot(lot_id)
+        delete_lot(lot_id)
+        return True
+    else:
+        return False
 
 def check_owner_of_pet(id_pet: int, id_user: int):
     """ принадлежит ли питомец пользователю? """
+    print(id_pet, id_user)
     return Pet.objects.get(id=id_pet).owner.id == id_user
 
 def delete_lot(id):
