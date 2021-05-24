@@ -4,8 +4,7 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-#SECRET_KEY = os.getenv("SECRET_KEY")
-SECRET_KEY = '0s3flk7e25p4l-9cdo*x@(q^&rd_w%(6_5s=8(ehppevymcv&2'
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 DEBUG = True
 
@@ -57,13 +56,9 @@ WSGI_APPLICATION = 'app.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'db1',
-        'USER': 'nr',
-        'PASSWORD': '123',
-
-        #'NAME': os.getenv("DB_NAME"),
-        #'USER': os.getenv("DB_USER"),
-        #'PASSWORD': os.getenv("DB_PASS"),
+        'NAME': os.getenv("DB_NAME"),
+        'USER': os.getenv("DB_USER"),
+        'PASSWORD': os.getenv("DB_PASS"),
 
 
         'HOST': '10.0.1.1',
