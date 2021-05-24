@@ -1,6 +1,6 @@
 from .models import User, Pet, Lot, Bid
 from .serializer import UserSerializer, PetsSerializer, LotSerializer, BidSerializer, LotCloseSerializer
-from .services import close_lot
+from .services import add_lot, close_lot, make_bid
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -48,10 +48,11 @@ class BidsList(APIView):
 class CteateNewLot(APIView):
     """ добавление нового лота """
     def post(self, request):
-        #ToDo: add validation
         new_lot = LotSerializer(data=request.data)
-        if new_lot.is_valid():
-            new_lot.save()
+        if new_lot.is_valid() and add_lot(
+                owner_id=new_lot.data['owner'],
+                pet_id=new_lot.data['lot'],
+                start_price=new_lot.data['start_price']):
             return Response(status=201)
         else:
             return Response(status=400)
